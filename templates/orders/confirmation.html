@@ -1,0 +1,54 @@
+{% extends 'templates/base.html' %}
+{% load static %}
+
+{% block title %}Order Confirmed — Luxury Curtains Nigeria{% endblock %}
+
+{% block content %}
+<section class="section-padding confirmation-section" style="margin-top: 76px; background: var(--bg-subtle); min-height: 80vh; display: flex; align-items: center;">
+    <div class="container">
+        <div class="auth-card" style="max-width: 600px;">
+            <div class="confirmation-icon">
+                <i class="bi bi-check2"></i>
+            </div>
+            
+            <h2 class="mb-3 text-center" style="font-family: var(--font-display);">Thank you for your order!</h2>
+            <p class="text-center text-muted mb-4" style="font-size: 1.1rem;">
+                Your exquisite curtains will be crafted and shipped to you soon.
+            </p>
+            
+            <div class="p-4 bg-gold-subtle rounded text-start mb-4" style="border: var(--border-light);">
+                <div class="row text-center mb-4">
+                    <div class="col-6 border-end" style="border-color: rgba(212,175,55,0.2) !important;">
+                        <span class="d-block text-muted" style="font-size: 0.85rem; text-transform: uppercase;">Order Number</span>
+                        <strong style="font-size: 1.1rem; color: var(--gold-700);">{{ order.order_number }}</strong>
+                    </div>
+                    <div class="col-6">
+                        <span class="d-block text-muted" style="font-size: 0.85rem; text-transform: uppercase;">Total Amount</span>
+                        <strong style="font-size: 1.1rem; color: var(--gold-700);">₦{{ order.total|floatformat:0 }}</strong>
+                    </div>
+                </div>
+                
+                <div class="row text-center">
+                    <div class="col-12">
+                        <span class="d-block text-muted mb-1" style="font-size: 0.85rem; text-transform: uppercase;">Estimated Delivery</span>
+                        <div class="d-flex align-items-center justify-content-center" style="gap: 10px;">
+                            <i class="bi bi-calendar-event text-gold" style="font-size: 1.25rem;"></i>
+                            <strong style="font-size: 1.1rem;">{{ order.get_estimated_delivery|date:"F j, Y" }}</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <p class="text-center text-muted mb-4" style="font-size: 0.9rem;">
+                A confirmation email has been sent to <strong>{{ order.shipping_email }}</strong>.<br>
+                We will update you once your order begins processing.
+            </p>
+            
+            <div class="d-flex gap-3 justify-content-center mt-4">
+                <a href="{% url 'order_detail' order.id %}" class="btn-gold-outline">View Details</a>
+                <a href="{% url 'home' %}" class="btn-gold">Continue Shopping</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

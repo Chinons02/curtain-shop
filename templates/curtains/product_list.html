@@ -1,0 +1,139 @@
+{% extends 'templates/base.html' %}
+{% load static %}
+
+{% block title %}Shop Curtains — Luxury Curtains Nigeria{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header" style="margin-top: 76px;">
+    <div class="container">
+        <nav class="breadcrumb-luxury" aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Shop</li>
+            </ol>
+        </nav>
+        <h1>Our Collection</h1>
+        <p>Discover ready-made curtains crafted for elegance</p>
+    </div>
+</div>
+
+<section class="section-padding">
+    <div class="container">
+        <div class="row">
+            <!-- Filter Sidebar -->
+            <div class="col-lg-3 mb-4">
+                <div class="filter-sidebar">
+                    <h5><i class="bi bi-funnel me-2"></i>Filters</h5>
+                    <form method="get" action="{% url 'product_list' %}" id="filter-form">
+                        <div class="filter-group">
+                            <label for="filter-fabric">Fabric Type</label>
+                            <select name="fabric_type" id="filter-fabric" class="form-select" onchange="this.form.submit()">
+                                <option value="">All Fabrics</option>
+                                {% for fabric in fabric_types %}
+                                <option value="{{ fabric.id }}" {% if request.GET.fabric_type == fabric.id|stringformat:"d" %}selected{% endif %}>
+                                    {{ fabric.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label for="filter-color">Color</label>
+                            <select name="color" id="filter-color" class="form-select" onchange="this.form.submit()">
+                                <option value="">All Colors</option>
+                                {% for color in fabric_colors %}
+                                <option value="{{ color.id }}" {% if request.GET.color == color.id|stringformat:"d" %}selected{% endif %}>
+                                    {{ color.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label for="filter-min-price">Min Price (₦)</label>
+                            <input type="number" name="min_price" id="filter-min-price" class="form-control"
+                                   placeholder="0" value="{{ request.GET.min_price }}">
+                        </div>
+
+                        <div class="filter-group">
+                            <label for="filter-max-price">Max Price (₦)</label>
+                            <input type="number" name="max_price" id="filter-max-price" class="form-control"
+                                   placeholder="No limit" value="{{ request.GET.max_price }}">
+                        </div>
+
+                        <button type="submit" class="btn-gold btn-sm w-100 mt-2">
+                            <i class="bi bi-search me-1"></i>Apply Filters
+                        </button>
+
+                        {% if request.GET.fabric_type or request.GET.color or request.GET.min_price or request.GET.max_price %}
+                        <a href="{% url 'product_list' %}" class="btn-gold-outline btn-sm w-100 mt-2 text-center d-block">
+                            Clear Filters
+                        </a>
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+
+            <!-- Product Grid -->
+            <div class="col-lg-9">
+                {% if curtains %}
+                <div class="row g-4">
+                    {% for curtain in curtains %}
+                    <div class="col-lg-4 col-md-6 reveal">
+                        <div class="product-card">
+                            <div class="product-card-image">
+                                {% if curtain.image %}
+                                    <img src="{{ curtain.image.url }}" alt="{{ curtain.design.name }}" style="object-fit: cover; width: 100%; height: 100%;">
+                                {% elif curtain.design.image %}
+                                    <img src="{{ curtain.design.image.url }}" alt="{{ curtain.design.name }}" style="object-fit: cover; width: 100%; height: 100%;">
+                                {% else %}
+                                    <i class="bi bi-window"></i>
+                                {% endif %}
+                                <div class="overlay"></div>
+                                {% if curtain.includes_inner_curtain %}
+                                <span class="product-card-badge">+ Inner Curtain</span>
+                                {% endif %}
+                            </div>
+                            <div class="product-card-body">
+                                <h3 class="product-card-title">{{ curtain.design.name }}</h3>
+                                <p class="product-card-meta">
+                                    {{ curtain.fabric_type.name }} · {{ curtain.fabric_color.name }}<br>
+                                    <i class="bi bi-rulers me-1"></i>{{ curtain.width }}" × {{ curtain.height }}"<br>
+                                    <i class="bi bi-tag me-1"></i>Style: {{ curtain.design.get_style_display }}<br>
+                                    <i class="bi bi-scissors me-1"></i>Heading: {{ curtain.design.get_heading_type_display }}
+                                    {% if curtain.stock > 0 %}
+                                    <br><span style="color: var(--accent-success);"><i class="bi bi-check-circle me-1"></i>In Stock ({{ curtain.stock }})</span>
+                                    {% else %}
+                                    <br><span style="color: var(--accent-danger);"><i class="bi bi-x-circle me-1"></i>Out of Stock</span>
+                                    {% endif %}
+                                </p>
+                                <div class="product-card-price">₦{{ curtain.price|floatformat:0 }}</div>
+                                <div class="product-card-actions">
+                                    <a href="{% url 'design_detail' curtain.design.id %}" class="btn-gold btn-sm">
+                                        View Details
+                                    </a>
+                                    <a href="{% url 'customize_curtain_design' curtain.design.id %}" class="btn-gold-outline btn-sm">
+                                        Customize
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <div class="empty-state-icon">
+                        <i class="bi bi-search"></i>
+                    </div>
+                    <h3>No curtains found</h3>
+                    <p>Try adjusting your filters or browse our full collection</p>
+                    <a href="{% url 'product_list' %}" class="btn-gold">View All Products</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

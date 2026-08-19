@@ -1,0 +1,136 @@
+{% extends 'templates/base.html' %}
+{% load static %}
+
+{% block title %}Order Details — Luxury Curtains Nigeria{% endblock %}
+
+{% block content %}
+<div style="margin-top: 76px;">
+    <div class="container">
+        <nav class="breadcrumb-luxury" aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'order_history' %}">My Orders</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ order.order_number }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<section class="section-padding pt-4">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-subtle">
+            <div>
+                <h2 class="mb-1">Order {{ order.order_number }}</h2>
+                <div class="text-muted" style="font-size: 0.9rem;">Placed on {{ order.created_at|date:"F j, Y \\a\\t g:i A" }}</div>
+            </div>
+            <div>
+                <span class="status-badge {{ order.status }} px-4 py-2" style="font-size: 0.9rem;">
+                    {{ order.get_status_display }}
+                </span>
+            </div>
+        </div>
+
+        <div class="row g-5">
+            <!-- Items -->
+            <div class="col-lg-8">
+                <div class="card border-light shadow-sm mb-4" style="border-radius: var(--radius-md);">
+                    <div class="card-header bg-gold-subtle border-bottom border-light py-3">
+                        <h4 class="mb-0 fs-5"><i class="bi bi-bag-check me-2 text-gold"></i>Items Ordered</h4>
+                    </div>
+                    <div class="card-body p-0">
+                        <ul class="list-group list-group-flush">
+                            {% for item in items %}
+                            <li class="list-group-item p-4">
+                                <div class="d-flex gap-4">
+                                    <div style="width: 80px; height: 80px; background: var(--gradient-gold); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; color: var(--text-dark); font-size: 2rem; flex-shrink: 0;">
+                                        <i class="bi bi-window-stack"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex justify-content-between">
+                                            <h5 class="mb-1 fs-6">
+                                                {% if item.custom_curtain %}
+                                                    {% if item.custom_curtain.design %}
+                                                        {{ item.custom_curtain.design.name }}
+                                                    {% else %}
+                                                        Custom Curtain
+                                                    {% endif %}
+                                                {% elif item.ready_made_curtain %}
+                                                    {{ item.ready_made_curtain.design.name }}
+                                                {% endif %}
+                                            </h5>
+                                            <div class="fw-bold" style="color: var(--gold-700);">₦{{ item.total_price|floatformat:0 }}</div>
+                                        </div>
+                                        
+                                        <div class="text-muted mb-2" style="font-size: 0.85rem;">
+                                            {% if item.custom_curtain %}
+                                                Size: {{ item.custom_curtain.width }}" × {{ item.custom_curtain.height }}"<br>
+                                                Fabric: {{ item.custom_curtain.fabric_type.name }} ({{ item.custom_curtain.fabric_color.name }})<br>
+                                                Style: {{ item.custom_curtain.get_style_display }}
+                                            {% endif %}
+                                        </div>
+                                        
+                                        <div class="d-flex justify-content-between align-items-center mt-2">
+                                            <span class="badge bg-light text-dark border">Qty: {{ item.quantity }}</span>
+                                            <span class="text-muted" style="font-size: 0.8rem;">₦{{ item.unit_price|floatformat:0 }} each</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary & Details -->
+            <div class="col-lg-4">
+                <div class="card border-light shadow-sm mb-4" style="border-radius: var(--radius-md);">
+                    <div class="card-header bg-gold-subtle border-bottom border-light py-3">
+                        <h4 class="mb-0 fs-5"><i class="bi bi-receipt me-2 text-gold"></i>Payment Summary</h4>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between mb-2 text-muted" style="font-size: 0.9rem;">
+                            <span>Subtotal</span>
+                            <span>₦{{ order.subtotal|floatformat:0 }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2 text-muted" style="font-size: 0.9rem;">
+                            <span>Shipping</span>
+                            <span>₦{{ order.shipping_cost|floatformat:0 }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3 text-muted" style="font-size: 0.9rem;">
+                            <span>VAT (7.5%)</span>
+                            <span>₦{{ order.tax|floatformat:0 }}</span>
+                        </div>
+                        <hr class="border-subtle my-3">
+                        <div class="d-flex justify-content-between fw-bold" style="font-size: 1.1rem; color: var(--gold-700);">
+                            <span>Total</span>
+                            <span>₦{{ order.total|floatformat:0 }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card border-light shadow-sm" style="border-radius: var(--radius-md);">
+                    <div class="card-header bg-gold-subtle border-bottom border-light py-3">
+                        <h4 class="mb-0 fs-5"><i class="bi bi-truck me-2 text-gold"></i>Shipping Details</h4>
+                    </div>
+                    <div class="card-body p-4">
+                        <strong class="d-block mb-1">{{ order.shipping_name }}</strong>
+                        <div class="text-muted mb-3" style="font-size: 0.9rem;">
+                            {{ order.shipping_address }}<br>
+                            {{ order.shipping_city }}, {{ order.shipping_state }} {{ order.shipping_zip }}<br>
+                            {{ order.shipping_country.name }}
+                        </div>
+                        
+                        <div class="mb-1" style="font-size: 0.9rem;">
+                            <i class="bi bi-telephone text-muted me-2"></i> {{ order.shipping_phone }}
+                        </div>
+                        <div style="font-size: 0.9rem;">
+                            <i class="bi bi-envelope text-muted me-2"></i> {{ order.shipping_email }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

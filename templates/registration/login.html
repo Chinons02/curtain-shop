@@ -1,0 +1,33 @@
+{% extends 'templates/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Login — Luxury Curtains Nigeria{% endblock %}
+
+{% block content %}
+<section class="auth-section" style="padding-top: 100px;">
+    <div class="container">
+        <div class="auth-card reveal">
+            <h2>Welcome Back</h2>
+            <p class="auth-subtitle">Sign in to manage your custom orders</p>
+            
+            <form method="post" action="{% url 'login' %}">
+                {% csrf_token %}
+                {{ form|crispy }}
+                
+                <div class="d-grid mt-4">
+                    <button type="submit" class="btn-gold btn-lg w-100">
+                        Sign In <i class="bi bi-box-arrow-in-right ms-2"></i>
+                    </button>
+                </div>
+                
+                <input type="hidden" name="next" value="{{ next }}">
+            </form>
+            
+            <div class="auth-link">
+                Don't have an account? <a href="{% url 'users:register' %}">Create Account</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

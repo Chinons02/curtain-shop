@@ -1,0 +1,166 @@
+{% extends 'templates/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Design Your Curtain — Luxury Curtains Nigeria{% endblock %}
+
+{% block content %}
+<div class="page-header" style="margin-top: 76px;">
+    <div class="container text-center">
+        <h1>Customize Your Perfect Curtain</h1>
+        <p>Tailored exactly to your window measurements and personal style</p>
+        
+        <div class="step-indicator mt-4">
+            <div class="step-dot active"></div>
+            <div class="step-dot"></div>
+            <div class="step-dot"></div>
+        </div>
+    </div>
+</div>
+
+<section class="section-padding customize-section">
+    <div class="container">
+        <form method="post" id="customization-form">
+            {% csrf_token %}
+            <div class="row g-5">
+                <!-- Customization Options -->
+                <div class="col-lg-8">
+                    <div class="customize-card reveal">
+                        <h3 class="mb-4"><i class="bi bi-rulers me-2 text-gold"></i>1. Measurements</h3>
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label class="form-label">Width (Inches) <span class="text-danger">*</span></label>
+                                {{ form.width }}
+                                <div class="form-text">Measure the rod length, we'll calculate the fullness needed.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Height / Drop (Inches) <span class="text-danger">*</span></label>
+                                {{ form.height }}
+                                <div class="form-text">Measure from the top of the rod to the floor/sill.</div>
+                            </div>
+                        </div>
+
+                        <hr class="my-5" style="border-color: rgba(212,175,55,0.2);">
+
+                        <h3 class="mb-4"><i class="bi bi-palette me-2 text-gold"></i>2. Fabric & Style</h3>
+                        
+                        <!-- Selected Design context if customizing from a specific design -->
+                        {% if design %}
+                            <input type="hidden" name="design" value="{{ design.id }}">
+                            <div class="alert bg-gold-subtle border-gold mb-4 d-flex align-items-center">
+                                <i class="bi bi-info-circle text-gold me-3 fs-4"></i>
+                                <div>
+                                    <strong>Customizing: {{ design.name }}</strong><br>
+                                    <span class="text-muted" style="font-size: 0.85rem;">Style and heading are pre-selected based on this design.</span>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label class="form-label">Primary Fabric <span class="text-danger">*</span></label>
+                                <select name="fabric_type" class="form-select" required>
+                                    <option value="">Choose a fabric...</option>
+                                    {% for fabric in fabric_types %}
+                                        <option value="{{ fabric.id }}" data-price="{{ fabric.price_per_meter }}">
+                                            {{ fabric.name }} (₦{{ fabric.price_per_meter|floatformat:0 }}/m)
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label class="form-label">Fabric Color <span class="text-danger">*</span></label>
+                                <select name="fabric_color" class="form-select d-none" required>
+                                    <option value="">Select color...</option>
+                                    {% for color in fabric_colors %}
+                                        <option value="{{ color.id }}">{{ color.name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <div class="color-swatch-grid">
+                                    {% for color in fabric_colors %}
+                                        <div class="color-swatch" style="background-color: {{ color.hex_code }};" 
+                                             title="{{ color.name }}" data-color-id="{{ color.id }}"></div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Curtain Style <span class="text-danger">*</span></label>
+                                <select name="style" class="form-select" required>
+                                    {% for value, label in form.fields.style.choices %}
+                                        <option value="{{ value }}" {% if form.initial.style == value %}selected{% endif %}>{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Heading / Pleat Type <span class="text-danger">*</span></label>
+                                <select name="heading_type" class="form-select" required>
+                                    {% for value, label in form.fields.heading_type.choices %}
+                                        <option value="{{ value }}" {% if form.initial.heading_type == value %}selected{% endif %}>{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <hr class="my-5" style="border-color: rgba(212,175,55,0.2);">
+
+                        <h3 class="mb-4"><i class="bi bi-layers me-2 text-gold"></i>3. Add-ons & Details</h3>
+                        
+                        <div class="form-check form-switch mb-4">
+                            <input class="form-check-input" type="checkbox" role="switch" id="include_inner_curtain" name="include_inner_curtain">
+                            <label class="form-check-label fw-bold ms-2" for="include_inner_curtain">Include Inner / Sheer Curtain</label>
+                        </div>
+                        
+                        <div class="inner-curtain-options" id="inner-curtain-options">
+                            <label class="form-label">Select Inner Fabric</label>
+                            <select name="inner_fabric" class="form-select">
+                                <option value="">Choose sheer fabric...</option>
+                                {% for inner in inner_fabrics %}
+                                    <option value="{{ inner.id }}">{{ inner.name }} (₦{{ inner.price_per_meter|floatformat:0 }}/m)</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <label class="form-label">Quantity (Sets)</label>
+                            {{ form.quantity }}
+                        </div>
+
+                        <div class="mt-4">
+                            <label class="form-label">Special Instructions</label>
+                            {{ form.special_instructions }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Price Calculator Sticky Sidebar -->
+                <div class="col-lg-4">
+                    <div class="price-display reveal" id="price-container" style="transition-delay: 0.2s;">
+                        <div class="price-display-label">Estimated Total</div>
+                        <div class="price-display-amount" id="live-price">—</div>
+                        <div class="price-display-note">Includes fabrication and materials.<br>Price updates automatically.</div>
+                        
+                        <button type="submit" class="btn-gold btn-lg w-100 mt-4">
+                            <i class="bi bi-cart-plus me-2"></i>Add to Cart
+                        </button>
+                        
+                        <div class="mt-4 pt-3 border-top text-start" style="border-color: rgba(212,175,55,0.2) !important;">
+                            <ul class="list-unstyled mb-0" style="font-size: 0.85rem; color: var(--text-medium);">
+                                <li class="mb-2"><i class="bi bi-check-lg text-gold me-2"></i>Premium quality materials</li>
+                                <li class="mb-2"><i class="bi bi-check-lg text-gold me-2"></i>Expert craftsmanship</li>
+                                <li><i class="bi bi-check-lg text-gold me-2"></i>Guaranteed fit</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/customize.js' %}"></script>
+{% endblock %}

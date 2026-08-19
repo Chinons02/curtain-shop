@@ -1,0 +1,109 @@
+{% extends 'templates/base.html' %}
+{% load static %}
+
+{% block title %}Shopping Cart — Luxury Curtains Nigeria{% endblock %}
+
+{% block content %}
+<div class="page-header" style="margin-top: 76px;">
+    <div class="container">
+        <h1>Your Shopping Cart</h1>
+        <p>Review your selections before checking out</p>
+    </div>
+</div>
+
+<section class="section-padding">
+    <div class="container">
+        {% if custom_items %}
+        <div class="row g-5">
+            <!-- Cart Items -->
+            <div class="col-lg-8">
+                {% for item in custom_items %}
+                <div class="cart-item reveal">
+                    <div class="cart-item-image">
+                        {% if item.design and item.design.image %}
+                            <img src="{{ item.design.image.url }}" alt="{{ item.design.name }}" style="width:100%; height:100%; object-fit:cover; border-radius:var(--radius-sm);">
+                        {% else %}
+                            <i class="bi bi-window"></i>
+                        {% endif %}
+                    </div>
+                    <div class="cart-item-details">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h4 class="cart-item-title">
+                                    {% if item.design %}
+                                        {{ item.design.name }}
+                                    {% else %}
+                                        Custom Fabricated Curtain
+                                    {% endif %}
+                                </h4>
+                                <p class="cart-item-meta mb-1">
+                                    {{ item.width }}"(W) × {{ item.height }}"(H)
+                                </p>
+                                <p class="cart-item-meta mb-0 text-muted">
+                                    {{ item.fabric_type.name }} ({{ item.fabric_color.name }})<br>
+                                    Style: {{ item.get_style_display }} · {{ item.get_heading_type_display }}
+                                    {% if item.include_inner_curtain %}
+                                    <br><i class="bi bi-plus text-gold"></i> Includes Sheer ({{ item.inner_fabric.name }})
+                                    {% endif %}
+                                </p>
+                            </div>
+                            <div class="text-end">
+                                <div class="cart-item-price mb-2">₦{{ item.total_price|floatformat:0 }}</div>
+                                <div class="text-muted" style="font-size: 0.85rem;">Qty: {{ item.quantity }}</div>
+                                <a href="{% url 'remove_from_cart' item.id %}" class="btn cart-item-remove mt-2" onclick="return confirm('Remove this item from your cart?');">
+                                    <i class="bi bi-trash3"></i> Remove
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Order Summary -->
+            <div class="col-lg-4">
+                <div class="order-summary reveal" style="transition-delay: 0.2s;">
+                    <h3>Order Summary</h3>
+                    
+                    <div class="order-summary-row">
+                        <span>Subtotal</span>
+                        <span>₦{{ subtotal|floatformat:0 }}</span>
+                    </div>
+                    <div class="order-summary-row">
+                        <span>VAT (7.5%)</span>
+                        <span>₦{{ tax|floatformat:0 }}</span>
+                    </div>
+                    <div class="order-summary-row">
+                        <span>Shipping & Handling</span>
+                        <span>₦{{ shipping|floatformat:0 }}</span>
+                    </div>
+                    
+                    <div class="order-summary-row total">
+                        <span>Total</span>
+                        <span>₦{{ total|floatformat:0 }}</span>
+                    </div>
+
+                    <a href="{% url 'checkout' %}" class="btn-gold btn-lg w-100 d-block text-center mt-4 mb-3">
+                        Proceed to Checkout <i class="bi bi-arrow-right ms-2"></i>
+                    </a>
+                    
+                    <a href="{% url 'product_list' %}" class="btn-gold-outline w-100 d-block text-center">
+                        <i class="bi bi-arrow-left me-2"></i>Continue Shopping
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">
+                <i class="bi bi-cart-x"></i>
+            </div>
+            <h3>Your cart is empty</h3>
+            <p>Looks like you haven't added any elegant curtains to your cart yet.</p>
+            <a href="{% url 'product_list' %}" class="btn-gold mt-2">Start Shopping</a>
+            <a href="{% url 'customize_curtain' %}" class="btn-gold-outline ms-2 mt-2">Design Custom Curtains</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,117 @@
+{% extends 'templates/base.html' %}
+{% load static %}
+
+{% block title %}{{ design.name }} — Luxury Curtains Nigeria{% endblock %}
+
+{% block content %}
+<div style="margin-top: 76px;">
+    <div class="container">
+        <nav class="breadcrumb-luxury" aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'product_list' %}">Shop</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ design.name }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<section class="section-padding" style="padding-top: 2rem;">
+    <div class="container">
+        <div class="row g-5">
+            <!-- Design Image -->
+            <div class="col-lg-6">
+                <div class="product-card-image" style="height: 450px; border-radius: var(--radius-lg);">
+                    {% if design.image %}
+                        <img src="{{ design.image.url }}" alt="{{ design.name }}" style="border-radius: var(--radius-lg);">
+                    {% else %}
+                        <i class="bi bi-window" style="font-size: 5rem;"></i>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Design Info -->
+            <div class="col-lg-6">
+                <h1 style="font-size: 2rem; margin-bottom: 0.5rem;">{{ design.name }}</h1>
+                <hr class="gold-divider" style="margin: 1rem 0;">
+                <p style="font-family: var(--font-elegant); font-size: 1.1rem; line-height: 1.8;">
+                    {{ design.description }}
+                </p>
+
+                <!-- Specifications -->
+                <table class="table design-specs mt-4">
+                    <tbody>
+                        <tr>
+                            <th><i class="bi bi-bookmark me-2"></i>Style</th>
+                            <td>{{ design.get_style_display }}</td>
+                        </tr>
+                        <tr>
+                            <th><i class="bi bi-layers me-2"></i>Heading Type</th>
+                            <td>{{ design.get_heading_type_display }}</td>
+                        </tr>
+                        <tr>
+                            <th><i class="bi bi-tag me-2"></i>Base Price</th>
+                            <td style="font-weight: 600; color: var(--gold-600);">₦{{ design.base_price|floatformat:0 }}</td>
+                        </tr>
+                        {% if design.customization_fee > 0 %}
+                        <tr>
+                            <th><i class="bi bi-palette me-2"></i>Customization Fee</th>
+                            <td>₦{{ design.customization_fee|floatformat:0 }}</td>
+                        </tr>
+                        {% endif %}
+                        <tr>
+                            <th><i class="bi bi-window-stack me-2"></i>Inner Curtain</th>
+                            <td>{% if design.has_inner_curtain %}<span style="color: var(--accent-success);">Available</span>{% else %}Not included{% endif %}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Actions -->
+                <div class="mt-4 d-flex gap-3 flex-wrap">
+                    {% if design.is_customizable %}
+                    <a href="{% url 'customize_curtain_design' design.id %}" class="btn-gold btn-lg">
+                        <i class="bi bi-palette me-2"></i>Customize This Design
+                    </a>
+                    {% endif %}
+                    <a href="{% url 'product_list' %}" class="btn-gold-outline">
+                        <i class="bi bi-arrow-left me-2"></i>Back to Shop
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ready Made Options -->
+        {% if ready_made_curtains %}
+        <div class="mt-5 pt-4">
+            <h2 style="font-size: 1.5rem; margin-bottom: 1.5rem;">
+                <i class="bi bi-bag-check me-2 text-gold"></i>Available Ready-Made Options
+            </h2>
+            <div class="row g-4">
+                {% for curtain in ready_made_curtains %}
+                <div class="col-lg-4 col-md-6 reveal">
+                    <div class="product-card">
+                        <div class="product-card-body">
+                            <h3 class="product-card-title">{{ curtain.fabric_type.name }} — {{ curtain.fabric_color.name }}</h3>
+                            <p class="product-card-meta">
+                                <i class="bi bi-rulers me-1"></i>{{ curtain.width }}" × {{ curtain.height }}"
+                                {% if curtain.includes_inner_curtain %}
+                                <br><i class="bi bi-layers me-1"></i>Includes inner curtain
+                                {% endif %}
+                                <br>
+                                {% if curtain.stock > 0 %}
+                                <span style="color: var(--accent-success);"><i class="bi bi-check-circle me-1"></i>In Stock ({{ curtain.stock }})</span>
+                                {% else %}
+                                <span style="color: var(--accent-danger);"><i class="bi bi-x-circle me-1"></i>Out of Stock</span>
+                                {% endif %}
+                            </p>
+                            <div class="product-card-price">₦{{ curtain.price|floatformat:0 }}</div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

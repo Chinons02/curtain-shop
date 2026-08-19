@@ -1,0 +1,87 @@
+{% extends 'templates/base.html' %}
+{% load static %}
+
+{% block title %}My Orders — Luxury Curtains Nigeria{% endblock %}
+
+{% block content %}
+<div class="page-header" style="margin-top: 76px;">
+    <div class="container">
+        <h1>My Orders</h1>
+        <p>Track and manage your curtain orders</p>
+    </div>
+</div>
+
+<section class="section-padding">
+    <div class="container">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-lg-3 mb-4">
+                <div class="list-group" style="border-radius: var(--radius-md); border: var(--border-light);">
+                    <a href="#" class="list-group-item list-group-item-action active" style="background-color: var(--gold-500); border-color: var(--gold-500); padding: 1rem;">
+                        <i class="bi bi-bag-check me-2"></i>Order History
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action" style="padding: 1rem; color: var(--text-medium);">
+                        <i class="bi bi-person me-2"></i>Account Settings
+                    </a>
+                    <a href="{% url 'logout' %}" class="list-group-item list-group-item-action text-danger" style="padding: 1rem;">
+                        <i class="bi bi-box-arrow-right me-2"></i>Logout
+                    </a>
+                </div>
+            </div>
+
+            <!-- Orders Content -->
+            <div class="col-lg-9">
+                {% if orders %}
+                <div class="table-responsive">
+                    <table class="table orders-table">
+                        <thead>
+                            <tr>
+                                <th>Order #</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Total</th>
+                                <th class="text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in orders %}
+                            <tr>
+                                <td><strong style="color: var(--gold-600);">{{ order.order_number }}</strong></td>
+                                <td>{{ order.created_at|date:"M j, Y" }}</td>
+                                <td>
+                                    <span class="status-badge {{ order.status }}">
+                                        {% if order.status == 'pending' %}<i class="bi bi-clock-history"></i>
+                                        {% elif order.status == 'processing' %}<i class="bi bi-gear"></i>
+                                        {% elif order.status == 'shipped' %}<i class="bi bi-truck"></i>
+                                        {% elif order.status == 'delivered' %}<i class="bi bi-check-circle"></i>
+                                        {% elif order.status == 'cancelled' %}<i class="bi bi-x-circle"></i>
+                                        {% endif %}
+                                        {{ order.get_status_display }}
+                                    </span>
+                                </td>
+                                <td style="font-weight: 600;">₦{{ order.total|floatformat:0 }}</td>
+                                <td class="text-end">
+                                    <a href="{% url 'order_detail' order.id %}" class="btn btn-sm btn-gold-outline" style="padding: 0.25rem 0.75rem; font-size: 0.75rem;">
+                                        View
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state bg-surface rounded border p-5">
+                    <div class="empty-state-icon">
+                        <i class="bi bi-box-seam"></i>
+                    </div>
+                    <h3>No orders yet</h3>
+                    <p>You haven't placed any orders with us yet. Start exploring our beautiful curtain collections.</p>
+                    <a href="{% url 'product_list' %}" class="btn-gold mt-2">Start Shopping</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

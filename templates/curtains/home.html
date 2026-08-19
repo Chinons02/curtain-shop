@@ -1,0 +1,276 @@
+{% extends 'templates/base.html' %}
+{% load static %}
+
+{% block title %}Luxury Curtains Nigeria — Premium Handcrafted Curtains{% endblock %}
+
+{% block content %}
+<!-- ========== HERO SECTION ========== -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <div class="hero-content">
+                    <div class="hero-badge">
+                        <i class="bi bi-gem"></i>
+                        Premium Collection
+                    </div>
+                    <h1 class="hero-title">
+                        Elevate Your Space With <span class="highlight">Luxury Curtains</span>
+                    </h1>
+                    <p class="hero-subtitle">
+                        Handcrafted curtains tailored to perfection. From ready-made elegance to fully customized
+                        designs — transform every window into a masterpiece.
+                    </p>
+                    <div class="hero-actions">
+                        <a href="{% url 'product_list' %}" class="btn-gold btn-lg">
+                            <i class="bi bi-bag me-2"></i>Shop Collection
+                        </a>
+                        <a href="{% url 'customize_curtain' %}" class="btn-gold-outline btn-lg">
+                            <i class="bi bi-palette me-2"></i>Design Yours
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 d-none d-lg-block">
+                <div class="hero-image-wrapper">
+                    <div class="hero-image-card overflow-hidden">
+                        {% if hero_images %}
+                        <div id="heroCarousel" class="carousel slide carousel-fade h-100" data-bs-ride="carousel"
+                            data-bs-interval="5000">
+                            <div class="carousel-inner h-100"
+                                style="border-radius: var(--radius-md); box-shadow: var(--shadow-sm);">
+                                {% for image_url in hero_images %}
+                                <div class="carousel-item {% if forloop.first %}active{% endif %} h-100">
+                                    <img src="{{ image_url }}" class="d-block w-100 h-100"
+                                        style="object-fit: cover; object-position: top; border-radius: var(--radius-md); image-rendering: high-quality;"
+                                        alt="Hero Image">
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="hero-image-placeholder h-100 d-flex align-items-center justify-content-center">
+                            <i class="bi bi-window"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="hero-stat stat-1">
+                        <div class="hero-stat-number">500+</div>
+                        <div class="hero-stat-label">Happy Customers</div>
+                    </div>
+                    <div class="hero-stat stat-2">
+                        <div class="hero-stat-number">50+</div>
+                        <div class="hero-stat-label">Fabric Options</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== FEATURED DESIGNS ========== -->
+{% if featured_designs %}
+<section class="section-padding">
+    <div class="container">
+        <div class="section-title">
+            <h2>Featured Designs</h2>
+            <p>Our most loved curtain designs, curated for distinguished tastes</p>
+        </div>
+        <div class="row g-4">
+            {% for design in featured_designs %}
+            <div class="col-lg-4 col-md-6 reveal">
+                <div class="product-card">
+                    <div class="product-card-image">
+                        {% if design.image %}
+                        <img src="{{ design.image.url }}" alt="{{ design.name }}">
+                        {% else %}
+                        <i class="bi bi-window"></i>
+                        {% endif %}
+                        <div class="overlay"></div>
+                        {% if design.is_featured %}
+                        <span class="product-card-badge">
+                            <i class="bi bi-star-fill me-1"></i>Featured
+                        </span>
+                        {% endif %}
+                    </div>
+                    <div class="product-card-body">
+                        <h3 class="product-card-title">{{ design.name }}</h3>
+                        <p class="product-card-meta">
+                            {{ design.get_style_display }} · {{ design.get_heading_type_display }}
+                        </p>
+                        <p class="product-card-meta" style="font-size: 0.85rem;">
+                            {{ design.description|truncatewords:18 }}
+                        </p>
+                        <div class="product-card-price">
+                            From {{ design.get_price_range }}
+                        </div>
+                        <div class="product-card-actions">
+                            <a href="{% url 'design_detail' design.id %}" class="btn-gold btn-sm">
+                                View Details
+                            </a>
+                            {% if design.is_customizable %}
+                            <a href="{% url 'customize_curtain_design' design.id %}" class="btn-gold-outline btn-sm">
+                                Customize
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- ========== WHY CHOOSE US ========== -->
+<section class="section-padding bg-gold-subtle">
+    <div class="container">
+        <div class="section-title">
+            <h2>Why Choose Us</h2>
+            <p>Craftsmanship, quality, and attention to detail in every stitch</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6 reveal">
+                <div class="feature-card">
+                    <div class="feature-card-icon">
+                        <i class="bi bi-scissors"></i>
+                    </div>
+                    <h4>Custom Tailored</h4>
+                    <p>Every curtain crafted to your exact measurements and style preferences</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 reveal">
+                <div class="feature-card">
+                    <div class="feature-card-icon">
+                        <i class="bi bi-gem"></i>
+                    </div>
+                    <h4>Premium Fabrics</h4>
+                    <p>Sourced from the finest mills worldwide for lasting elegance and durability</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 reveal">
+                <div class="feature-card">
+                    <div class="feature-card-icon">
+                        <i class="bi bi-truck"></i>
+                    </div>
+                    <h4>Nationwide Delivery</h4>
+                    <p>Swift and secure delivery across Nigeria, right to your doorstep</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 reveal">
+                <div class="feature-card">
+                    <div class="feature-card-icon">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                    <h4>Quality Guarantee</h4>
+                    <p>Uncompromising quality with a satisfaction guarantee on every order</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== FABRIC SHOWCASE ========== -->
+{% if fabric_types %}
+<section class="section-padding">
+    <div class="container">
+        <div class="section-title">
+            <h2>Our Fabrics</h2>
+            <p>Explore our curated collection of premium fabrics</p>
+        </div>
+        <div class="row g-4">
+            {% for fabric in fabric_types %}
+            <div class="col-lg-3 col-md-4 col-6 reveal">
+                <div class="fabric-card">
+                    <div class="fabric-card-image">
+                        {% if fabric.image %}
+                        <img src="{{ fabric.image.url }}" alt="{{ fabric.name }}">
+                        {% else %}
+                        <i class="bi bi-palette2"></i>
+                        {% endif %}
+                    </div>
+                    <div class="fabric-card-overlay">
+                        <h5>{{ fabric.name }}</h5>
+                        <span>₦{{ fabric.price_per_meter|floatformat:0 }}/m</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- ========== READY MADE CURTAINS ========== -->
+{% if ready_made_curtains %}
+<section class="section-padding bg-gold-subtle">
+    <div class="container">
+        <div class="section-title">
+            <h2>Ready-Made Curtains</h2>
+            <p>Beautiful curtains ready to hang — no wait, no fuss</p>
+        </div>
+        <div class="row g-4">
+            {% for curtain in ready_made_curtains %}
+            <div class="col-lg-3 col-md-4 col-sm-6 reveal">
+                <div class="product-card">
+                    <div class="product-card-image">
+                        {% if curtain.image %}
+                        <img src="{{ curtain.image.url }}" alt="{{ curtain.design.name }}" style="object-fit: cover; width: 100%; height: 100%;">
+                        {% elif curtain.design.image %}
+                        <img src="{{ curtain.design.image.url }}" alt="{{ curtain.design.name }}" style="object-fit: cover; width: 100%; height: 100%;">
+                        {% else %}
+                        <i class="bi bi-window"></i>
+                        {% endif %}
+                        <div class="overlay"></div>
+                        {% if curtain.includes_inner_curtain %}
+                        <span class="product-card-badge">+ Inner Curtain</span>
+                        {% endif %}
+                    </div>
+                    <div class="product-card-body">
+                        <h3 class="product-card-title">{{ curtain.design.name }}</h3>
+                        <p class="product-card-meta">
+                            {{ curtain.fabric_type.name }} · {{ curtain.fabric_color.name }}<br>
+                            <i class="bi bi-rulers me-1"></i>{{ curtain.width }}" × {{ curtain.height }}"<br>
+                            <i class="bi bi-tag me-1"></i>Style: {{ curtain.design.get_style_display }}<br>
+                            <i class="bi bi-scissors me-1"></i>Heading: {{ curtain.design.get_heading_type_display }}
+                        </p>
+                        <div class="product-card-price">₦{{ curtain.price|floatformat:0 }}</div>
+                        <div class="product-card-actions">
+                            <a href="{% url 'design_detail' curtain.design.id %}" class="btn-gold btn-sm">
+                                View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-4">
+            <a href="{% url 'product_list' %}" class="btn-gold-outline">
+                View All Products <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- ========== CTA SECTION ========== -->
+<section class="section-padding" style="background: var(--gradient-hero);">
+    <div class="container text-center">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 reveal">
+                <h2 style="margin-bottom: 1rem;">Ready to Transform Your Space?</h2>
+                <p
+                    style="font-family: var(--font-elegant); font-size: 1.2rem; color: var(--text-light); max-width: 500px; margin: 0 auto 2rem;">
+                    Design your perfect curtains with our custom builder. Choose your fabric, color, style, and
+                    measurements.
+                </p>
+                <a href="{% url 'customize_curtain' %}" class="btn-gold btn-lg">
+                    <i class="bi bi-magic me-2"></i>Start Designing
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
