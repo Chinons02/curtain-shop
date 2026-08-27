@@ -16,7 +16,7 @@ services:
           name: curtain-shop-db
           property: connectionString
       - key: ALLOWED_HOSTS
-        sync: false   # Set this manually in the Render dashboard
+        value: curtain-shop-834b.onrender.com,localhost,127.0.0.1
 
 databases:
   - name: curtain-shop-db
