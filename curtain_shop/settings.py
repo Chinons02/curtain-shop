@@ -9,7 +9,11 @@ SECRET_KEY = config('SECRET_KEY')
 
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = str(config('ALLOWED_HOSTS', default='localhost,127.0.0.1')).split(',')
+ALLOWED_HOSTS = str(config('ALLOWED_HOSTS', default='.onrender.com,localhost,127.0.0.1')).split(',')
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.onrender.com',
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
